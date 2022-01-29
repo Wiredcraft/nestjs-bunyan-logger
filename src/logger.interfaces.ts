@@ -5,9 +5,10 @@ export interface LoggerConfig {
   name: string;
   streamType?: string;
   path?: string;
+  errWithStack?: boolean;
   requestTrackCategory?: string;
   excludeHeaders?: string[];
-  genReqId?: (r: Express.Request) => string;
+  genReqId?: (r: Request) => string;
 }
 
 export interface LoggerConfigAsync extends Pick<ModuleMetadata, 'imports'> {

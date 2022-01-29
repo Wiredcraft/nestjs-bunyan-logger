@@ -1,7 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import * as Bunyan from 'bunyan';
-import process from 'process';
 
 import { LOGGER, LOGGER_OPTIONS } from './constants';
 import { RequestInterceptor } from './logger.interceptor';
@@ -28,10 +27,9 @@ const createBunyanLogger = (config: LoggerConfig) => {
     streams,
     serializers: {
       // customize err serializer coz buyan std err serializer doesn't work without err.stack
-      err:
-        process.env.NODE_ENV === 'production'
-          ? noStackErrSerializers
-          : Bunyan.stdSerializers.err,
+      err: config.errWithStack
+        ? Bunyan.stdSerializers.err
+        : noStackErrSerializers,
       req: Bunyan.stdSerializers.req,
       res: Bunyan.stdSerializers.res,
     },
