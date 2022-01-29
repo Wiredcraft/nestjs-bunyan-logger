@@ -2,7 +2,12 @@
   "name": "@wiredcraft/nestjs-bunyan-logger",
   "version": "1.0.1",
   "description": "",
-  "author": "Wiredcraft",
+  "author": {
+    "name": "Xavier Zhou",
+    "email": "xavier@wiredcrfat.com",
+    "url": "https://github.com/xavierchow"
+  },
+  "contributors": [],
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -10,9 +15,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Wiredcraft/nestjs-bunyan-logger.git"
