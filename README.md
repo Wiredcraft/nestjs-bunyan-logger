@@ -83,6 +83,12 @@ export class CatService {
 $ yarn install
 ```
 
+## Publish
+
+``` bash
+$ npm version major|minor|patch
+$ npm publish
+```
 
 ## License
 
