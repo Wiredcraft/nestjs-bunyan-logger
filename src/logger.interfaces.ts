@@ -5,7 +5,6 @@ export interface LoggerConfig {
   name: string;
   streamType?: string;
   path?: string;
-  // TODO componentName?
   requestTrackCategory?: string;
   excludeHeaders?: string[];
   genReqId?: (r: Express.Request) => string;

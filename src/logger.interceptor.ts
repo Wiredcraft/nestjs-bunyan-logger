@@ -1,6 +1,7 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import * as Bunyan from 'bunyan';
 import * as Express from 'express';
+import { getClientIp } from 'request-ip';
 import { ServerResponse } from 'http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -38,8 +39,7 @@ export class RequestInterceptor implements NestInterceptor {
       req_id: reqId,
     };
 
-    // TODO use https://github.com/pbojinov/request-ip
-    data.ip = req.ip || (req.socket && req.socket.remoteAddress) || '127.0.0.1';
+    data.ip = getClientIp(req);
 
     // TODO short body?
     data.headers = { ...req.headers };

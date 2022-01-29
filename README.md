@@ -53,7 +53,7 @@ export default () => ({
   logger: {
       name: 'awesome-app',
       streamType: 'FILE' | 'STDOUT',
-      path: './logs/app.log',
+      path: './logs/app.log', // only available for `FILE` streamType
   }
 });
 

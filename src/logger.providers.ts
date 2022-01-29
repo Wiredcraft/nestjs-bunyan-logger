@@ -18,7 +18,6 @@ const noStackErrSerializers = function (err: {
 const createBunyanLogger = (config: LoggerConfig) => {
   let streams: any[];
 
-  // TODO uppsercase
   if (config.streamType && config.streamType.toUpperCase() === 'FILE') {
     streams = [{ path: config.path || './logs/app.log' }];
   } else {
