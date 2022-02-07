@@ -13,7 +13,7 @@ export class RequestInterceptor implements NestInterceptor {
 
   constructor(rootLogger: Bunyan, private readonly options: LoggerConfig) {
     this._logger = rootLogger.child({
-      category: options.requestTrackCategory || 'RequestTrack',
+      context: options.context || 'RequestTrack',
     });
   }
 
@@ -31,12 +31,13 @@ export class RequestInterceptor implements NestInterceptor {
 
     const reqId = this.options.genReqId
       ? this.options.genReqId(req)
-      : req.headers['x-transaction-id'];
+      : req.headers[this.options.reqIdHeader || 'x-transaction-id'];
     const data: { [key: string]: any } = {
       method,
       url,
       route,
       req_id: reqId,
+      transactionId: reqId,
     };
 
     data.ip = getClientIp(req);
@@ -48,6 +49,7 @@ export class RequestInterceptor implements NestInterceptor {
       delete data.headers[h];
     }
 
+    // TODO is it better to feed req tot he bunyan.stdSerializers.req?
     this._logger.info({ incoming: 'req', ...data });
 
     return next.handle().pipe(
@@ -56,7 +58,7 @@ export class RequestInterceptor implements NestInterceptor {
         this._logger.info({
           imcoming: 'resp',
           'status-code': res.statusCode,
-          ms,
+          'response-time': ms,
           method,
           route,
           url,

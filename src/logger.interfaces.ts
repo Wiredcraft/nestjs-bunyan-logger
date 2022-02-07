@@ -6,8 +6,9 @@ export interface LoggerConfig {
   streamType?: string;
   path?: string;
   errWithStack?: boolean;
-  requestTrackCategory?: string;
+  context?: string;
   excludeHeaders?: string[];
+  reqIdHeader?: string;
   genReqId?: (r: Request) => string;
 }
 
