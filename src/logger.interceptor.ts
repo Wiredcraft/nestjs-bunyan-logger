@@ -49,20 +49,21 @@ export class RequestInterceptor implements NestInterceptor {
       delete data.headers[h];
     }
 
-    // TODO is it better to feed req tot he bunyan.stdSerializers.req?
-    this._logger.info({ incoming: 'req', ...data });
+    // TODO is it better to feed req to the bunyan.stdSerializers.req?
+    this._logger.info({ direction: 'inbound', ...data });
 
     return next.handle().pipe(
       tap(() => {
         const ms = new Date().valueOf() - start.valueOf();
         this._logger.info({
-          imcoming: 'resp',
+          direction: 'outbound',
           'status-code': res.statusCode,
           'response-time': ms,
           method,
           route,
           url,
           req_id: reqId,
+          transactionId: reqId,
         });
       }),
     );
