@@ -7,10 +7,10 @@ import { RequestInterceptor } from './logger.interceptor';
 import {
   LoggerConfig,
   LoggerConfigAsync,
-  Transfomer,
+  Transformer,
 } from './logger.interfaces';
 
-// Those fields should not be overridden by the transfomers.
+// Those fields should not be overridden by the transformers.
 const coreFields = ['v', 'level', 'time'];
 
 const isObject = (obj: any) => {
@@ -68,7 +68,7 @@ const reducer = (
   return acc;
 };
 
-const buildLogger = (logger: Bunyan, transformers: Transfomer[]) => {
+const buildLogger = (logger: Bunyan, transformers: Transformer[]) => {
   // @ts-ignore
   logger._emit = (record: Record<string, any>, noemit) => {
     const transformedRec = transformers.reduce(reducer, record);

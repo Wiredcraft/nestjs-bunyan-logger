@@ -1,7 +1,7 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { Request } from 'express';
 
-export type Transfomer = Record<string, any>;
+export type Transformer = Record<string, any>;
 
 export interface LoggerConfig {
   name: string;
@@ -12,7 +12,7 @@ export interface LoggerConfig {
   excludeHeaders?: string[];
   reqIdHeader?: string;
   genReqId?: (r: Request) => string;
-  transformers?: Transfomer[];
+  transformers?: Transformer[];
   avoidChildTransform?: boolean;
 }
 
