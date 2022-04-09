@@ -12,6 +12,7 @@ export interface LoggerConfig {
   excludeHeaders?: string[];
   reqIdHeader?: string;
   genReqId?: (r: Request) => string;
+  excludeReqPath?: string;
   transformers?: Transformer[];
   avoidChildTransform?: boolean;
 }

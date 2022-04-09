@@ -54,6 +54,7 @@ export default () => ({
       name: 'awesome-app',
       streamType: 'FILE' | 'STDOUT',
       path: './logs/app.log', // only available for `FILE` streamType
+      excludeReqPath: '/health', // the path that you want to skip logging
   }
 });
 
