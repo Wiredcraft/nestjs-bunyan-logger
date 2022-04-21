@@ -29,9 +29,10 @@ export class RequestInterceptor implements NestInterceptor {
     const url = req.url;
     const route = req.route.path;
 
-    const reqId = this.options.genReqId
-      ? this.options.genReqId(req)
-      : req.headers[this.options.reqIdHeader || 'x-transaction-id'];
+    const options = this.options;
+    const reqId = options.genReqId
+      ? options.genReqId(req)
+      : req.headers[options.reqIdHeader || 'x-transaction-id'];
     const data: { [key: string]: any } = {
       method,
       url,
@@ -45,15 +46,23 @@ export class RequestInterceptor implements NestInterceptor {
     // TODO short body?
     data.headers = { ...req.headers };
 
-    for (const h of this.options.excludeHeaders || []) {
+    for (const h of options.excludeHeaders || []) {
       delete data.headers[h];
     }
 
-    // TODO is it better to feed req to the bunyan.stdSerializers.req?
-    this._logger.info({ direction: 'inbound', ...data });
+    const skipLogging =
+      options.excludeReqPath && options.excludeReqPath === url;
+
+    if (!skipLogging) {
+      // TODO is it better to feed req to the bunyan.stdSerializers.req?
+      this._logger.info({ direction: 'inbound', ...data });
+    }
 
     return next.handle().pipe(
       tap(() => {
+        if (skipLogging) {
+          return;
+        }
         const ms = new Date().valueOf() - start.valueOf();
         this._logger.info({
           direction: 'outbound',
