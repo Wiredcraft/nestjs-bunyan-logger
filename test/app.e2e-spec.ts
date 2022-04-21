@@ -14,6 +14,10 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('should be able to track req,resp', async () => {
     const loggerMock = jest
       .spyOn(Logger.prototype, 'info')
