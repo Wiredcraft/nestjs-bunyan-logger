@@ -67,7 +67,7 @@ export class RequestInterceptor implements NestInterceptor {
       }
       const common = {
         direction: 'outbound',
-        'response-time': new Date().valueOf() - start.valueOf(),
+        'response-time': new Date().getTime() - start.getTime(),
         method,
         route,
         url,
