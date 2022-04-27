@@ -1,4 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  ForbiddenException,
+  Body,
+} from '@nestjs/common';
 
 @Controller()
 export class AppController {
@@ -9,5 +15,13 @@ export class AppController {
   @Get('/health')
   getHealthStatus(): string {
     return 'ok';
+  }
+  @Get('/forbid')
+  getNotAllowd(): string {
+    throw new ForbiddenException();
+  }
+  @Post('/cats')
+  createCat(@Body() body) {
+    return { data: body };
   }
 }
