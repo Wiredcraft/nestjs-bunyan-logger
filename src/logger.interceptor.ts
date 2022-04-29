@@ -50,7 +50,7 @@ export class RequestInterceptor implements NestInterceptor {
       delete data.headers[h];
     }
     if (req.body) {
-      data['short-body'] = buildShortBody(req.body);
+      data['short-body'] = buildShortBody(req.body, options.shortBodyLength);
     }
 
     const skipLogging =
@@ -84,7 +84,7 @@ export class RequestInterceptor implements NestInterceptor {
       }
       this._logger.info({
         ...common,
-        'short-body': body && buildShortBody(body),
+        'short-body': body && buildShortBody(body, options.shortBodyLength),
         'status-code': res.statusCode,
       });
     };
@@ -94,6 +94,8 @@ export class RequestInterceptor implements NestInterceptor {
   }
 }
 
-function buildShortBody(raw) {
-  return util.inspect(raw, { depth: 3, maxStringLength: 50 });
+function buildShortBody(raw, length = 500) {
+  return util
+    .inspect(raw, { depth: 3, maxStringLength: 50 })
+    .substring(0, length);
 }

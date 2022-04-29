@@ -8,6 +8,7 @@ import { AppController } from './app.controller';
       name: 'awesome-app',
       streamType: 'STDOUT',
       excludeReqPath: '/health',
+      shortBodyLength: 100,
     }),
   ],
   controllers: [AppController],

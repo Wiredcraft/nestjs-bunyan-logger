@@ -15,6 +15,7 @@ export interface LoggerConfig {
   excludeReqPath?: string;
   transformers?: Transformer[];
   avoidChildTransform?: boolean;
+  shortBodyLength?: number;
 }
 
 export interface LoggerConfigAsync extends Pick<ModuleMetadata, 'imports'> {
