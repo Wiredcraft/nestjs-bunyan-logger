@@ -8,6 +8,7 @@ import { tap } from 'rxjs/operators';
 import * as util from 'util';
 
 import { LoggerConfig } from './logger.interfaces';
+import { isMatch } from './logger.utils';
 
 export class RequestInterceptor implements NestInterceptor {
   private readonly _logger: Bunyan;
@@ -53,9 +54,7 @@ export class RequestInterceptor implements NestInterceptor {
       data['short-body'] = buildShortBody(req.body, options.shortBodyLength);
     }
 
-    const skipLogging =
-      options.excludeReqPath && options.excludeReqPath === url;
-
+    const skipLogging = isMatch(url, options.excludeReqPath);
     if (!skipLogging) {
       // TODO is it better to feed req to the bunyan.stdSerializers.req?
       this._logger.info({ direction: 'inbound', ...data });
