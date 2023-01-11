@@ -1,6 +1,6 @@
 {
   "name": "@wiredcraft/nestjs-bunyan-logger",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "",
   "author": {
     "name": "Xavier Zhou",
