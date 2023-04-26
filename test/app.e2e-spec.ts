@@ -14,11 +14,15 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   afterAll(async () => {
     await app.close();
   });
 
-  it('should be able to track req,resp', async () => {
+  it('should be able to track restful req,resp', async () => {
     const loggerMock = jest
       .spyOn(Logger.prototype, 'info')
       .mockImplementation();
@@ -42,7 +46,41 @@ describe('AppController (e2e)', () => {
       'transactionId',
       'test-txn-id',
     );
-    loggerMock.mockRestore();
+  });
+  it('should be able to track graphql req, resp', async () => {
+    const loggerMock = jest
+      .spyOn(Logger.prototype, 'info')
+      .mockImplementation();
+    const resp = await request(app.getHttpServer())
+      .post('/graphql')
+      .set('x-transaction-id', 'test-txn-id')
+      .send({
+        query: `
+        {
+          hello
+        }`,
+      })
+      .expect(200);
+    expect(resp.body).toEqual({
+      data: {
+        hello: 'hello',
+      },
+    });
+    expect(loggerMock).toHaveBeenCalledTimes(2);
+    // first call
+    expect(loggerMock.mock.calls[0][0]).toHaveProperty('direction', 'inbound');
+    expect(loggerMock.mock.calls[0][0]).toHaveProperty('route', '/graphql');
+    expect(loggerMock.mock.calls[0][0]).toHaveProperty(
+      'transactionId',
+      'test-txn-id',
+    );
+    // second call
+    expect(loggerMock.mock.calls[1][0]).toHaveProperty('direction', 'outbound');
+    expect(loggerMock.mock.calls[1][0]).toHaveProperty('route', '/graphql');
+    expect(loggerMock.mock.calls[1][0]).toHaveProperty(
+      'transactionId',
+      'test-txn-id',
+    );
   });
   it('should skip record log for excludeReqPath', async () => {
     const loggerMock = jest
@@ -52,9 +90,8 @@ describe('AppController (e2e)', () => {
     const resp = await request(app.getHttpServer()).get('/health').expect(200);
     expect(resp.text).toBe('ok');
     expect(loggerMock).toHaveBeenCalledTimes(0);
-    loggerMock.mockRestore();
   });
-  it('should be able to track resp when non-200 status code', async () => {
+  it('should be able to track restful resp when non-200 status code', async () => {
     const loggerInfoMock = jest
       .spyOn(Logger.prototype, 'info')
       .mockImplementation();
@@ -77,10 +114,54 @@ describe('AppController (e2e)', () => {
     expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty('route', '/forbid');
     expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty('status-code', 403);
     expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty('err');
-    loggerInfoMock.mockRestore();
-    loggerErrorMock.mockRestore();
   });
-  it('should be able to record short-body', async () => {
+  it('should be able to track graphql resp when non-200 status code', async () => {
+    const loggerInfoMock = jest
+      .spyOn(Logger.prototype, 'info')
+      .mockImplementation();
+    const loggerErrorMock = jest
+      .spyOn(Logger.prototype, 'error')
+      .mockImplementation();
+
+    const resp = await request(app.getHttpServer())
+      .post('/graphql')
+      .set('x-transaction-id', 'test-txn-id')
+      .send({
+        query: `
+        {
+          forbid
+        }`,
+      });
+    expect(resp.statusCode).toBe(200);
+    expect(resp.body).toMatchObject({
+      errors: [
+        {
+          extensions: {
+            code: 'FORBIDDEN',
+          },
+        },
+      ],
+      data: null,
+    });
+    expect(loggerInfoMock).toHaveBeenCalledTimes(1);
+    expect(loggerErrorMock).toHaveBeenCalledTimes(1);
+    expect(loggerInfoMock.mock.calls[0][0]).toHaveProperty(
+      'direction',
+      'inbound',
+    );
+    expect(loggerInfoMock.mock.calls[0][0]).toHaveProperty('route', '/graphql');
+    expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty(
+      'direction',
+      'outbound',
+    );
+    expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty(
+      'route',
+      '/graphql',
+    );
+    expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty('status-code', 403);
+    expect(loggerErrorMock.mock.calls[0][0]).toHaveProperty('err');
+  });
+  it('should be able to record restful short-body', async () => {
     const loggerMock = jest
       .spyOn(Logger.prototype, 'info')
       .mockImplementation();
@@ -103,14 +184,36 @@ describe('AppController (e2e)', () => {
       'short-body',
       "{ data: { name: 'cathy', gene: 'Persian', age: 4 } }",
     );
-
-    loggerMock.mockRestore();
+  });
+  it('should be able to record graphql short-body', async () => {
+    const loggerMock = jest
+      .spyOn(Logger.prototype, 'info')
+      .mockImplementation();
+    const resp = await request(app.getHttpServer())
+      .post('/graphql')
+      .set('x-transaction-id', 'test-txn-id')
+      .send({
+        query: `{hello}`,
+      })
+      .expect(200);
+    expect(resp.body.data).toEqual({
+      hello: 'hello',
+    });
+    expect(loggerMock).toHaveBeenCalledTimes(2);
+    // first call
+    expect(loggerMock.mock.calls[0][0]).toHaveProperty('direction', 'inbound');
+    expect(loggerMock.mock.calls[0][0]['short-body']).toBe(
+      `{ query: '{hello}' }`,
+    );
+    // second call
+    expect(loggerMock.mock.calls[1][0]).toHaveProperty('direction', 'outbound');
+    expect(loggerMock.mock.calls[1][0]['short-body']).toBe(`'hello'`);
   });
   it('should be able to restrict the length of short-body', async () => {
     const loggerMock = jest
       .spyOn(Logger.prototype, 'info')
       .mockImplementation();
-    const resp = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/cats')
       .set('x-transaction-id', 'test-txn-id')
       .send({
@@ -141,7 +244,5 @@ describe('AppController (e2e)', () => {
     // second call
     expect(loggerMock.mock.calls[1][0]).toHaveProperty('direction', 'outbound');
     expect(loggerMock.mock.calls[1][0]['short-body']).toHaveLength(100);
-
-    loggerMock.mockRestore();
   });
 });

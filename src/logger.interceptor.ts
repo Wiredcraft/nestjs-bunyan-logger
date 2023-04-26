@@ -9,6 +9,7 @@ import * as util from 'util';
 
 import { LoggerConfig } from './logger.interfaces';
 import { isMatch } from './logger.utils';
+import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 
 export class RequestInterceptor implements NestInterceptor {
   private readonly _logger: Bunyan;
@@ -24,12 +25,22 @@ export class RequestInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     const start = new Date();
-    const ctx = context.switchToHttp();
-    const req = ctx.getRequest<Express.Request>();
-    const res = ctx.getResponse<ServerResponse>();
+    let req: Express.Request;
+    let res: ServerResponse | undefined;
+    if (context.getType() === 'http') {
+      const ctx = context.switchToHttp();
+      req = ctx.getRequest<Express.Request>();
+      res = ctx.getResponse<ServerResponse>();
+    } else if (context.getType<GqlContextType>() === 'graphql') {
+      const ctx = GqlExecutionContext.create(context).getContext();
+      req = ctx.req;
+    } else {
+      return next.handle();
+    }
+
     const method = req.method;
-    const url = req.url;
-    const route = req.route.path;
+    const url = req.originalUrl;
+    const route = context.getType() === 'http' ? req.route.path : req.baseUrl;
 
     const options = this.options;
     const reqId = options.genReqId
@@ -84,7 +95,7 @@ export class RequestInterceptor implements NestInterceptor {
       this._logger.info({
         ...common,
         'short-body': body && buildShortBody(body, options.shortBodyLength),
-        'status-code': res.statusCode,
+        'status-code': context.getType() === 'http' ? res.statusCode : 200,
       });
     };
     return next
