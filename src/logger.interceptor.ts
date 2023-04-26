@@ -25,22 +25,15 @@ export class RequestInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     const start = new Date();
-    let req: Express.Request;
-    let res: ServerResponse | undefined;
-    if (context.getType() === 'http') {
-      const ctx = context.switchToHttp();
-      req = ctx.getRequest<Express.Request>();
-      res = ctx.getResponse<ServerResponse>();
-    } else if (context.getType<GqlContextType>() === 'graphql') {
-      const ctx = GqlExecutionContext.create(context).getContext();
-      req = ctx.req;
-    } else {
+    const ctx = buildContext(context);
+    if (!ctx) {
       return next.handle();
     }
+    const { req, res } = ctx;
 
     const method = req.method;
     const url = req.originalUrl;
-    const route = context.getType() === 'http' ? req.route.path : req.baseUrl;
+    const route = req?.route?.path || req.baseUrl;
 
     const options = this.options;
     const reqId = options.genReqId
@@ -95,12 +88,32 @@ export class RequestInterceptor implements NestInterceptor {
       this._logger.info({
         ...common,
         'short-body': body && buildShortBody(body, options.shortBodyLength),
-        'status-code': context.getType() === 'http' ? res.statusCode : 200,
+        'status-code': res.statusCode,
       });
     };
     return next
       .handle()
       .pipe(tap({ next: (v) => logging(null, v), error: logging }));
+  }
+}
+
+function buildContext(
+  context: ExecutionContext,
+): { req: Express.Request; res: ServerResponse } | undefined {
+  if (context.getType() === 'http') {
+    const ctx = context.switchToHttp();
+    return {
+      req: ctx.getRequest<Express.Request>(),
+      res: ctx.getResponse<ServerResponse>(),
+    };
+  } else if (context.getType<GqlContextType>() === 'graphql') {
+    const ctx = GqlExecutionContext.create(context).getContext();
+    return {
+      req: ctx.req,
+      res: ctx.req.res,
+    };
+  } else {
+    return undefined;
   }
 }
 
