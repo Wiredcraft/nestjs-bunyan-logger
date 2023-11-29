@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from './test-app/app.module';
-import * as Logger from 'bunyan';
+import Logger from 'bunyan';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
