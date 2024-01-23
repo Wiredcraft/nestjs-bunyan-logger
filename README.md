@@ -13,12 +13,12 @@ A logger module for [Nestjs](https://github.com/nestjs/nest), built on top of [n
 
 ### Yarn
 ```
-yarn add @wiredcraft/nestjs-bunayn-logger
+yarn add @wiredcraft/nestjs-bunyan-logger
 ```
 
 ### NPM
 ```
-npm install @wiredcraft/nestjs-bunayn-logger --save
+npm install @wiredcraft/nestjs-bunyan-logger --save
 ```
 
 ## Integration
