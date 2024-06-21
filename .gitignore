@@ -37,3 +37,5 @@ lerna-debug.log*
 
 # Temp files
 *.temp
+
+.vscode
