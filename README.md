@@ -102,7 +102,7 @@ logger.info({ originalField: 'abc' });
 
 ### Clone
 
-`clone` type allows the user to copy value from one fieldname to the specified fieldname with the following limitations:
+`clone` type allows the user to copy value from one fieldname to the specified fieldname with the following rules:
 
 - The original field is not removed from the log entry
 - Only one embed level is allowed in new Fieldname specification
@@ -149,7 +149,7 @@ logger.info({ originalField: 'abc' });
 
 ### Map
 
-`map` type allows the user to apply a map value or a map function to the target field and replace the field value with the mapped value with the following limitation:
+`map` type allows the user to apply a map value or a map function to the target field and replace the field value with the mapped value with the following rules:
 
 - only one embed level is allowed for original field name specification
 
@@ -224,7 +224,7 @@ const transformers = [
     constant: { customField: 'custom-value' },
   },
   {
-    clone: { originalField: 'customField' },
+    clone: { originalField: 'backupField' },
   },
   {
     map: { originalField: (oldValue) => oldValue + 'transformed' },
@@ -242,7 +242,8 @@ logger.info({ originalField: 'original-value' });
 // The above will generate the following log entry:
 // {
 //   originalField: 'original-value-transformed',
-//   customField: 'original-value'
+//   backupField: 'original-value',
+//   customField: 'custom-value'
 // }
 ```
 
