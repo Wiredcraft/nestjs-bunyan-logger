@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import * as Bunyan from 'bunyan';
+import Bunyan from 'bunyan';
 
 import { LOGGER, LOGGER_OPTIONS } from './constants';
 import { RequestInterceptor } from './logger.interceptor';
