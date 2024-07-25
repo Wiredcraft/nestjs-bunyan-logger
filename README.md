@@ -252,7 +252,7 @@ logger.info({ originalField: 'original-value' });
 ## Installation
 
 ```bash
-$ yarn install
+$ npm install
 ```
 
 ## Publish
