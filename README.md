@@ -55,6 +55,7 @@ A sample configuration file is as below,
 export default () => ({
   logger: {
     name: 'awesome-app',
+    level: 'info',
     streamType: 'FILE' | 'STDOUT',
     path: './logs/app.log', // only available for `FILE` streamType
     excludeReqPath: '/health', // the path that you want to skip logging

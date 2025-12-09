@@ -96,6 +96,7 @@ const createBunyanLogger = (config: LoggerConfig) => {
   }
   let logger = Bunyan.createLogger({
     name: config.name,
+    level: config.level,
     streams,
     serializers: {
       // customize err serializer coz buyan std err serializer doesn't work without err.stack
