@@ -342,7 +342,28 @@ describe('Logger Provider', () => {
 
         const options: LoggerConfig = {
           name: 'test-app',
-          level: 'info',
+          level: 'error',
+          streamType: 'STDOUT',
+        };
+
+        const moduleRef = await Test.createTestingModule({
+          imports: [LoggerModule.forRoot(options)],
+        }).compile();
+
+        const logger = moduleRef.get<Bunyan>(LOGGER);
+        logger.info({ transactionId: 'test-transaction-id' });
+        logger.error({ transactionId: 'test-transaction-id' });
+        logger.trace({ transactionId: 'test-transaction-id' });
+
+        expect(spy.mock.calls).toHaveLength(1);
+      });
+      it('should use info log level if config does not specify any level value', async () => {
+        const spy = jest
+          .spyOn(Bunyan.prototype as any, '_emit')
+          .mockImplementation();
+
+        const options: LoggerConfig = {
+          name: 'test-app',
           streamType: 'STDOUT',
         };
 

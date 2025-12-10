@@ -96,7 +96,6 @@ const createBunyanLogger = (config: LoggerConfig) => {
   }
   let logger = Bunyan.createLogger({
     name: config.name,
-    level: config.level,
     streams,
     serializers: {
       // customize err serializer coz buyan std err serializer doesn't work without err.stack
@@ -107,6 +106,10 @@ const createBunyanLogger = (config: LoggerConfig) => {
       res: Bunyan.stdSerializers.res,
     },
   });
+
+  if (config.level) {
+    logger.level(config.level);
+  }
 
   // Overwrite the _emit function to apply the customized transformer.
   if (config.transformers && Array.isArray(config.transformers)) {
