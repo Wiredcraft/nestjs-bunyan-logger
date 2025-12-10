@@ -2,8 +2,7 @@ name: ci
 
 on:
   pull_request:
-    branches: [ master, develop ]
-
+    branches: [master, develop]
 
 jobs:
   basic:
@@ -22,13 +21,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: "https://registry.npmjs.org"
-          cache: 'npm'
 
       - name: Install packages
         run: npm i
 
       - name: Lint
-        run:  npm run lint
+        run: npm run lint
 
       - name: Test
         run: npm run test

@@ -14,7 +14,10 @@ import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 export class RequestInterceptor implements NestInterceptor {
   private readonly _logger: Bunyan;
 
-  constructor(rootLogger: Bunyan, private readonly options: LoggerConfig) {
+  constructor(
+    rootLogger: Bunyan,
+    private readonly options: LoggerConfig,
+  ) {
     this._logger = rootLogger.child({
       context: options.context || 'RequestTrack',
     });

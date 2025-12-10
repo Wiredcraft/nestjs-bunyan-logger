@@ -1,10 +1,12 @@
 import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { LogLevel } from 'bunyan';
 import { Request } from 'express';
 
 export type Transformer = Record<string, any>;
 
 export interface LoggerConfig {
   name: string;
+  level?: LogLevel;
   streamType?: string;
   path?: string;
   errWithStack?: boolean;

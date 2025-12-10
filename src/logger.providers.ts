@@ -107,6 +107,10 @@ const createBunyanLogger = (config: LoggerConfig) => {
     },
   });
 
+  if (config.level) {
+    logger.level(config.level);
+  }
+
   // Overwrite the _emit function to apply the customized transformer.
   if (config.transformers && Array.isArray(config.transformers)) {
     logger = buildLogger(logger, config.transformers);
