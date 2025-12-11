@@ -1,6 +1,6 @@
 {
   "name": "@wiredcraft/nestjs-bunyan-logger",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A logger module for [Nestjs](https://github.com/nestjs/nest), built on top of [node-bunyan](https://github.com/trentm/node-bunyan).",
   "author": "Xavier Zhou <xavier@wiredcrfat.com> (https://github.com/xavierchow)",
   "contributors": [],
